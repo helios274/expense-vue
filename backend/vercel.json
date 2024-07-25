@@ -1,0 +1,17 @@
+{
+  "builds": [
+    {
+      "src": "expense_vue/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "expense_vue/wsgi.py"
+    }
+  ]
+}
