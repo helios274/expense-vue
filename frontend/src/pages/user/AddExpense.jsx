@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import InputBox from "../../components/InputBox";
-import SelectBox from "../../components/SelectBox";
+import InputBox from "../../components/inputs/InputBox";
+import SelectBox from "../../components/inputs/SelectBox";
 import { useForm } from "react-hook-form";
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";

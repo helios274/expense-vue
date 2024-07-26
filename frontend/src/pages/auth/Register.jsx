@@ -5,9 +5,9 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 import Button from "../../components/Button";
-import InputBox from "../../components/InputBox";
+import InputBox from "../../components/inputs/InputBox";
 import AuthCard from "../../components/cards/AuthCard";
-import PasswordBox from "../../components/PasswordBox";
+import PasswordBox from "../../components/inputs/PasswordBox";
 
 const Register = () => {
   const { token } = useSelector((state) => state.auth);

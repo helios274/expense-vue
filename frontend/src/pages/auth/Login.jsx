@@ -8,9 +8,9 @@ import axios from "../../utils/axios";
 import handleErrors from "../../utils/errors";
 
 import Button from "../../components/Button";
-import InputBox from "../../components/InputBox";
+import InputBox from "../../components/inputs/InputBox";
 import AuthCard from "../../components/cards/AuthCard";
-import PasswordBox from "../../components/PasswordBox";
+import PasswordBox from "../../components/inputs/PasswordBox";
 
 const Login = () => {
   const { accessToken } = useSelector((state) => state.auth);
@@ -37,7 +37,7 @@ const Login = () => {
           refreshToken: response.data.tokens.refresh,
         })
       );
-      toast.success("User logged in successfully");
+      toast.success(`Welcome ${response.data.user.email}`);
       navigate("/dashboard");
     } catch (error) {
       handleErrors(error);
