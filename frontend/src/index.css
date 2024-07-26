@@ -69,7 +69,7 @@
     @apply py-3 sm:py-4;
   }
   .footer {
-    @apply py-3 flex justify-center items-center mt-1 text-sm max-[380px]:text-xs;
+    @apply py-3 flex justify-center items-center mt-1 text-sm max-[380px]:text-xs text-quaternary dark:text-primary;
   }
   .input {
     @apply bg-secondary dark:bg-tertiary border-quaternary dark:border-secondary focus:bg-primary dark:focus:bg-quaternary dark:text-primary rounded-md border-2 px-2 py-1 text-base outline-none md:py-1.5 md:text-lg;

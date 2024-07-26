@@ -29,7 +29,7 @@ const Dashboard = () => {
           </button>
         ))}
       </div>
-      <hr />
+      <hr className="rounded-s-full rounded-e-full border border-quaternary dark:border-secondary" />
       {sections.map((Section, index) => (
         <div
           key={index}

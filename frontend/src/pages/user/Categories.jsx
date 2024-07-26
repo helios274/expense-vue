@@ -108,14 +108,15 @@ const Categories = () => {
           <Button
             onClick={handleCreateCategory}
             children="Add"
-            className="ml-auto w-32 bg-tertiary text-primary hover:bg-quaternary hover:text-primary"
+            className="ml-auto w-32 bg-tertiary text-primary font-medium hover:bg-quaternary hover:text-primary dark:bg-secondary dark:text-quaternary dark:hover:bg-secondary/75"
           />
         </li>
         {categories.map((category) => (
           <li key={category.id} className="flex my-3 shadow-md">
             <input
               type="text"
-              className="w-full text-sm sm:text-base sm:font-medium bg-secondary focus:bg-white p-2 sm:p-3 focus:outline-none disabled:cursor-default"
+              className="w-full text-sm sm:text-base sm:font-medium bg-secondary 
+              focus:bg-white p-2 sm:p-3 focus:outline-none disabled:cursor-default dark:bg-tertiary dark:text-primary"
               value={
                 editingCategoryId === category.id
                   ? editedCategoryName
@@ -137,7 +138,8 @@ const Categories = () => {
                   <FaEdit />
                 </>
               }
-              className="flex justify-center items-center ml-auto font-medium w-16 bg-tertiary text-primary hover:bg-quaternary hover:text-primary"
+              className="flex justify-center items-center ml-auto font-medium w-16 bg-tertiary text-primary 
+              hover:bg-quaternary hover:text-primary dark:bg-secondary dark:text-quaternary dark:hover:bg-secondary/75"
             />
             <Button
               onClick={() => handleDeleteCategory(category.id)}

@@ -24,9 +24,12 @@ const AddExpense = () => {
   const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get("/api/expenses/categories");
+      if (response.data.length === 0) {
+        toast.error("No categories found. Please add categories first.");
+        navigate("/categories");
+      }
       setCategories(response.data);
     } catch (error) {
-      console.error(error);
       handleErrors(error);
     }
   }, []);
@@ -41,7 +44,6 @@ const AddExpense = () => {
       toast.success("Expense added successfully");
       navigate("/expenses");
     } catch (error) {
-      console.error(error);
       handleErrors(error);
     } finally {
       setBtnTxt("Add");

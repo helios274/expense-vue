@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import axios from "../../utils/axios";
 import handleErrors from "../../utils/errors";
 import ExpenseDataGrid from "../ExpenseDataGrid";
+import { Link } from "react-router-dom";
 
 const DailyExpenseSection = () => {
   const [month, setMonth] = useState(dayjs().format("MMMM YYYY"));
@@ -56,15 +57,28 @@ const DailyExpenseSection = () => {
   }, [fetchDailyExpenseData]);
 
   return (
-    <ExpenseDataGrid
-      expenseData={expenseData}
-      dataType="daily"
-      dateValue={month}
-      totalExpenses={totalExpenses}
-      totalAmount={totalAmount}
-      handleDatePicker={handleDatePicker}
-      dataAnimation={dataAnimation}
-    />
+    <>
+      {totalExpenses !== 0 ? (
+        <ExpenseDataGrid
+          expenseData={expenseData}
+          dataType="daily"
+          dateValue={month}
+          totalExpenses={totalExpenses}
+          totalAmount={totalAmount}
+          handleDatePicker={handleDatePicker}
+          dataAnimation={dataAnimation}
+        />
+      ) : (
+        <div className="mt-5 flex flex-col items-center">
+          <h1 className="text-quaternary text-xl font-bold dark:text-secondary">
+            You do not have expenses
+          </h1>
+          <Link to="/add-expense" className="btn-primary-outline mt-3">
+            Add expense
+          </Link>
+        </div>
+      )}
+    </>
   );
 };
 

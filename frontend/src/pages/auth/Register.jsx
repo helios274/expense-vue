@@ -37,11 +37,9 @@ const Register = () => {
       .then((response) => response.json())
       .then((res) => {
         if (res?.success) {
-          //   console.log(res);
           toast.success(res.message);
           navigate("/login");
         } else {
-          //   console.log(res);
           toast.error(res.errors[0].detail);
         }
       })

@@ -30,7 +30,6 @@ const Login = () => {
 
     try {
       const response = await axios.post("/api/auth/login/", data);
-      console.log(response.data.tokens.access);
       dispatch(
         login({
           user: response.data.user,
@@ -41,7 +40,6 @@ const Login = () => {
       toast.success("User logged in successfully");
       navigate("/dashboard");
     } catch (error) {
-      console.log(error);
       handleErrors(error);
     } finally {
       setBtnTxt("Login");
@@ -50,8 +48,7 @@ const Login = () => {
   };
 
   if (accessToken) {
-    toast.info("You are already logged in.");
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (
