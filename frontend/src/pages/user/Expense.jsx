@@ -1,5 +1,5 @@
 import axios from "../../utils/axios";
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
@@ -8,7 +8,7 @@ import { formatDate } from "../../utils/formatDate";
 import { Popover } from "antd";
 import { toast } from "react-toastify";
 import handleErrors from "../../utils/errors";
-import SkeletonTable from "../../components/SkeletonTable";
+import SearchBar from "../../components/inputs/SearchBar";
 
 const Expense = () => {
   const [expenses, setExpenses] = useState({
@@ -20,26 +20,15 @@ const Expense = () => {
     results: [],
   });
   const [pageInputValue, setPageInputValue] = useState(1);
-  const [searchString, setSearchString] = useState("");
   const [isExpense, setIsExpense] = useState(false);
-  const [skeleton, setSkeleton] = useState(false);
-  const loaderTimeoutRef = useRef(null); // Reference to store the timeout ID
 
   const fetchExpenses = useCallback(async (url = "/api/expenses") => {
-    // Set a delay before showing the loader
-    loaderTimeoutRef.current = setTimeout(() => {
-      setSkeleton(true);
-    }, 500); // Delay of 500ms (adjust as needed)
-
     try {
       const response = await axios.get(url);
       setIsExpense(response.data.results.length !== 0);
       setExpenses(response.data);
     } catch (error) {
       handleErrors(error);
-    } finally {
-      clearTimeout(loaderTimeoutRef.current); // Clear the timeout
-      setSkeleton(false);
     }
   }, []);
 
@@ -78,43 +67,21 @@ const Expense = () => {
         {isExpense ? (
           <>
             <div className="flex flex-col min-[840px]:flex-row mt-3 mb-3 min-[840px]:mb-5">
-              <div className="search-bar">
-                <input
-                  type="text"
-                  placeholder="Search here"
-                  className="search-input peer"
-                  value={searchString}
-                  onChange={(e) => setSearchString(e.target.value)}
-                />
-                <button
-                  className={`px-2 font-semibold peer-focus:bg-primary dark:peer-focus:bg-quaternary dark:peer-focus:text-primary ${
-                    searchString ? "block" : "hidden"
-                  }`}
-                  onClick={() => {
-                    setSearchString("");
-                    fetchExpenses();
-                  }}
-                >
-                  X
-                </button>
-                <button
-                  className="search-btn"
-                  onClick={() => {
-                    if (searchString.length > 2)
-                      fetchSearchResults(searchString);
-                  }}
-                >
-                  Search
-                </button>
-              </div>
+              <SearchBar
+                onSearch={fetchSearchResults}
+                onClear={fetchExpenses}
+              />
               <div className="flex min-[840px]:ml-auto max-[840px]:mt-3 max-[840px]:justify-center">
                 <Link
                   to="/add-expense"
-                  className="btn-primary-outline my-0 mr-3"
+                  className="max-[840px]:w-full text-center btn-primary-outline my-0 mr-3"
                 >
                   Add expense
                 </Link>
-                <Link to="/categories" className="btn-primary-outline my-0">
+                <Link
+                  to="/categories"
+                  className="max-[840px]:w-full text-center btn-primary-outline my-0"
+                >
                   Manage categories
                 </Link>
               </div>
@@ -232,7 +199,7 @@ const Expense = () => {
           </>
         ) : (
           <div className="mt-9 flex flex-col items-center">
-            <h1 className="text-4xl font-extrabold">
+            <h1 className="text-4xl font-extrabold text-center text-quaternary dark:text-secondary">
               You do not have any expenses
             </h1>
             <div className="flex justify-center gap-4 mt-7">

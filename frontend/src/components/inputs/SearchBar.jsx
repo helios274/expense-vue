@@ -1,18 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 
-const SearchBar = React.forwardRef(function searchBar({}, ref) {
+const SearchBar = ({ onSearch, onClear }) => {
+  const [searchString, setSearchString] = useState("");
+
   return (
-    <div className="flex md:w-[380px] h-full border-[2px] border-quaternary rounded-md dark:border-secondary">
+    <div className="search-bar">
       <input
-        type="search"
+        type="text"
         placeholder="Search here"
-        className="py-1 md:py-2 outline-none px-1 dark:rounded-l-[3px] dark:bg-primary rounded-l-md flex-grow"
+        className="search-input peer"
+        value={searchString}
+        onChange={(e) => setSearchString(e.target.value)}
       />
-      <button className="px-4 bg-quaternary rounded-r-[3px] text-secondary font-medium hover:bg-tertiary dark:border-secondary">
+      <button
+        className={`px-2 font-semibold dark:text-secondary peer-focus:bg-primary dark:peer-focus:bg-quaternary dark:peer-focus:text-primary ${
+          searchString ? "block" : "hidden"
+        }`}
+        onClick={() => {
+          setSearchString("");
+          onClear();
+        }}
+      >
+        X
+      </button>
+      <button
+        className="search-btn"
+        onClick={() => {
+          if (searchString.length > 1) onSearch(searchString);
+        }}
+      >
         Search
       </button>
     </div>
   );
-});
+};
 
 export default SearchBar;

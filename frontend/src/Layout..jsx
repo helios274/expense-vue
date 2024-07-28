@@ -14,7 +14,7 @@ function Layout() {
       }`}
     >
       <Header />
-      <main className="mt-2 sm:mt-3 lg:mt-4 mb-2 sm:mb-3 lg:mb-4 flex-grow">
+      <main className="mt-2 sm:mt-3 lg:mt-4 mb-2 sm:mb-3 lg:mb-4 flex-grow font-mono">
         <ToastContainer
           position="top-center"
           autoClose={3000}

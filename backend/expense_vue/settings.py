@@ -105,7 +105,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 if DEBUG:
     INTERNAL_IPS = [
         "127.0.0.1",

@@ -52,7 +52,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center mt-20 sm:mt-0">
       <AuthCard title="Login" cardClass="shadow-lg">
         <div className="dark:text-primary">
           <div>Test credentials:</div>
