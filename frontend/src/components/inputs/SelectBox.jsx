@@ -17,6 +17,7 @@ const SelectBox = React.forwardRef(function Select(
         {...props}
         className="input"
       >
+        <option value="">--Please choose a category--</option>
         {options.map((option) => (
           <option value={option.name} key={option.id}>
             {option.name}

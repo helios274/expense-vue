@@ -52,7 +52,6 @@ const Expense = () => {
       toast.success("Expense deleted successfully.");
       fetchExpenses();
     } catch (error) {
-      console.error(error);
       handleErrors(error, "Failed to delete expense.");
     }
   };

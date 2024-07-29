@@ -120,9 +120,9 @@ else:
 
     CSRF_COOKIE_SECURE = True
 
-    STATICFILES_DIRS = [
-        BASE_DIR / 'static'
-    ]
+    # STATICFILES_DIRS = [
+    #     BASE_DIR / 'static'
+    # ]
 
     # Google cloud storage settings
     # GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
