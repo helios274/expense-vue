@@ -57,10 +57,10 @@ const Login = () => {
         <div className="dark:text-primary">
           <div>Test credentials:</div>
           <div>
-            email: <span className="font-medium">test1@mail.com</span>
+            email: <span className="font-medium">raj@mail.com</span>
           </div>
           <div>
-            password: <span className="font-medium">test123</span>
+            password: <span className="font-medium">Raj@123</span>
           </div>
         </div>
         <form onSubmit={handleSubmit(loginHandler)} className="flex flex-col">
