@@ -68,17 +68,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'expense_vue.wsgi.application'
 
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3'
-        }
-    }
-else:
-    DATABASES = {
-        'default': env.db_url('EXTERNAL_DB_URL')
-    }
+DATABASES = {
+    'default': env.db_url('DB_URL')
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
