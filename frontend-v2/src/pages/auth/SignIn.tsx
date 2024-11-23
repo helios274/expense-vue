@@ -5,26 +5,23 @@ import Form from "@/components/form/Form";
 import Input from "@/components/form/Input";
 import { Button } from "@/components/ui/button";
 import FormCard from "@/components/form/FormCard";
-import { signupSchema } from "@/lib/validation/authSchemas";
+import { signinSchema } from "@/lib/validation/authSchemas";
 
-type SignupFormValues = z.infer<typeof signupSchema>;
+type SigninFormValues = z.infer<typeof signinSchema>;
 
-const SignUp = () => {
-  const methods = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
+const SignIn = () => {
+  const methods = useForm<SigninFormValues>({
+    resolver: zodResolver(signinSchema),
     mode: "onChange",
   });
 
-  const onSubmit = (data: SignupFormValues) => {
+  const onSubmit = (data: SigninFormValues) => {
     console.log("Form Data:", data);
   };
 
   return (
     <section className="flex items-center justify-center bg-background text-foreground mt-6">
-      <FormCard
-        title="Sign Up"
-        description="Create an account to start tracking your expenses"
-      >
+      <FormCard title="Sign In" description="Welcome back">
         <Form methods={methods} onSubmit={onSubmit}>
           <div className="space-y-4">
             <Input
@@ -39,18 +36,12 @@ const SignUp = () => {
               type="password"
               placeholder="Enter your password"
             />
-            <Input
-              name="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              placeholder="Confirm your password"
-            />
           </div>
           <Button
             type="submit"
             className="w-full mt-6 bg-primary text-primary-foreground"
           >
-            Sign Up
+            Sign In
           </Button>
         </Form>
       </FormCard>
@@ -58,4 +49,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
