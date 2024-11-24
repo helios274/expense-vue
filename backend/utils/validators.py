@@ -4,31 +4,37 @@ from rest_framework.serializers import ValidationError
 
 def validate_password(password: str):
     """
-    Validate that the given value contains at least one uppercase letter,
-    one lowercase letter, and one special character.
+    Validates that the given password meets the following criteria:
+    - Contains at least one uppercase letter
+    - Contains at least one lowercase letter
+    - Contains at least one digit
+    - Contains at least one special character
 
-    :param value: The password to be validated
-    :raises ValidationError: If the password does not contain at least one uppercase letter,
-    one lowercase letter, and one special character.
+    :param password: The password to be validated
+    :raises ValidationError: If the password does not meet the criteria.
     """
+    errors = []
+
     if not re.search(r'[A-Z]', password):
-        raise ValidationError(
-            "Password must contain at least one uppercase letter.")
+        errors.append("Password must contain at least one uppercase letter.")
     if not re.search(r'[a-z]', password):
-        raise ValidationError(
-            "Password must contain at least one lowercase letter.")
+        errors.append("Password must contain at least one lowercase letter.")
+    if not re.search(r'\d', password):
+        errors.append("Password must contain at least one digit.")
     if not re.search(r'[\W_]', password):
-        raise ValidationError(
-            "Password must contain at least one special character.")
+        errors.append("Password must contain at least one special character.")
+
+    if errors:
+        raise ValidationError(errors)
 
 
-def validate_alpha(value: str):
+def validate_name(value):
     """
-    Validate that the given value contains only alphabets (a-z, A-z).
+    Validates that the given value contains only alphabets.
 
-    :param value: The value to be validated
-    :raises ValidationError: If the value contains non-alphabet characters
+    :param value: The name to be validated
+    :raises ValidationError: If the value contains non-alphabetic characters.
     """
-    if not re.match("^[A-Za-z]+$", value):
-        raise ValidationError(
-            "This field must contain only alphabets (A-Z, a-z).")
+    if not value.isalpha():
+        raise ValidationError("This field can contain only alphabets.")
+    return value
