@@ -17,6 +17,8 @@ const SignUp = () => {
 
   const onSubmit = (data: SignupFormValues) => {
     console.log("Form Data:", data);
+    try {
+    } catch (error) {}
   };
 
   return (
@@ -33,6 +35,20 @@ const SignUp = () => {
               type="email"
               placeholder="Enter your email"
             />
+            <div className="flex space-x-3">
+              <Input
+                name="first_name"
+                label="First Name"
+                type="text"
+                placeholder="Enter your first name"
+              />
+              <Input
+                name="last_name"
+                label="Last Name"
+                type="text"
+                placeholder="Enter your last name"
+              />
+            </div>
             <Input
               name="password"
               label="Password"
@@ -40,7 +56,7 @@ const SignUp = () => {
               placeholder="Enter your password"
             />
             <Input
-              name="confirmPassword"
+              name="confirm_password"
               label="Confirm Password"
               type="password"
               placeholder="Confirm your password"
