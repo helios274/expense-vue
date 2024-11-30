@@ -1,9 +1,16 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import generics, status, mixins
+from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import User
-from .serializers import CreateUserSerializer, UserProfileSerializer, UserLoginSerializer
+from .serializers import (
+    CreateUserSerializer,
+    VerifyEmailSerializer,
+    ResendVerificationSerializer,
+    UserProfileSerializer,
+    UserLoginSerializer
+)
 from .permissions import IsOwner
 
 
@@ -18,10 +25,35 @@ class UserRegistrationView(generics.CreateAPIView):
             serializer.save()
             response = {
                 "success": True,
-                "message": "Account has been created",
-                "data": serializer.data
+                "message": "Account has been created. Please check your inbox for email verification.",
             }
             return Response(data=response, status=status.HTTP_201_CREATED)
+
+
+class VerifyEmailView(APIView):
+    def post(self, request):
+        serializer = VerifyEmailSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            response = {
+                "success": True,
+                "message": "Email verified successfully.",
+            }
+            return Response(response, status=status.HTTP_200_OK)
+
+
+class ResendVerificationView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ResendVerificationSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        # Always return the same response, regardless of whether the email exists or not
+        return Response(
+            {"message": "If an account with this email exists, a verification email has been sent."},
+            status=status.HTTP_200_OK
+        )
 
 
 class UserLoginView(generics.GenericAPIView):

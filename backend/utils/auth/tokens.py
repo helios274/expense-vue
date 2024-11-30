@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User
+from account.models import User
 
 
 def create_jwt_pair(user: User) -> dict[str, str]:

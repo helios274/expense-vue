@@ -23,6 +23,11 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(max_length=100, unique=True)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, blank=True, null=True)
+    verification_code = models.CharField(
+        max_length=64, blank=True, null=True)  # Store SHA256 hash
+    verification_code_expiry = models.DateTimeField(null=True, blank=True)
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
