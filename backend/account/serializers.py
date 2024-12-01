@@ -19,24 +19,51 @@ class CreateUserSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(
             queryset=User.objects.all(),
             message=_("Email is already in use")
-        )]
+        )],
+        error_messages={
+            'required': 'Email is required.',
+            'blank': 'Email is required.',
+        }
     )
     first_name = serializers.CharField(
-        max_length=30,
-        validators=[validate_name]
+        min_length=2,
+        max_length=50,
+        validators=[validate_name],
+        error_messages={
+            'required': 'First name is required.',
+            'blank': 'First name is required.',
+            'min_length': 'First name must be at least {min_length} characters long.',
+            'max_length': 'First name must not exceed {max_length} characters.',
+        }
     )
     last_name = serializers.CharField(
-        max_length=30,
-        validators=[validate_name]
+        max_length=50,
+        validators=[validate_name],
+        required=False,
+        allow_null=True,
+        allow_blank=True,
+        error_messages={
+            'max_length': 'Last name must not exceed {max_length} characters.',
+        }
     )
     password = serializers.CharField(
         min_length=5,
         max_length=25,
         write_only=True,
-        validators=[validate_password]
+        validators=[validate_password],
+        error_messages={
+            'required': 'Password is required.',
+            'blank': 'Password is required.',
+            'min_length': 'Password must be at least {min_length} characters long.',
+            'max_length': 'Password must not exceed {max_length} characters.',
+        }
     )
     confirm_password = serializers.CharField(
-        write_only=True
+        write_only=True,
+        error_messages={
+            'required': 'Confirm Password is required.',
+            'blank': 'Confirm Password is required.',
+        }
     )
 
     class Meta:
@@ -105,8 +132,6 @@ class VerifyEmailSerializer(serializers.Serializer):
         user.verification_code_expiry = None
         user.save()
         return user
-
-# serializers.py
 
 
 class ResendVerificationSerializer(serializers.Serializer):
