@@ -6,19 +6,52 @@ import Input from "@/components/form/Input";
 import { Button } from "@/components/ui/button";
 import FormCard from "@/components/form/FormCard";
 import { signupSchema } from "@/lib/validation/authSchemas";
+import axios from "@/utils/axios/config";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const methods = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     mode: "onChange",
   });
 
-  const onSubmit = (data: SignupFormValues) => {
-    console.log("Form Data:", data);
+  const onSubmit = async (data: SignupFormValues) => {
+    setIsSubmitting(true);
     try {
-    } catch (error) {}
+      await axios.post("auth/register/", data);
+      toast.success("Sign-up successful! Please verify your email.");
+      // Navigate to verify-email page and pass the email securely
+      navigate("/verify-email", { state: { email: data.email } });
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage =
+          error.response.data.message || "An error occurred during sign-up.";
+        toast.error(errorMessage);
+
+        // Handle field-specific errors if provided by the server
+        if (error.response.data.errors) {
+          const fieldErrors = error.response.data.errors;
+          Object.keys(fieldErrors).forEach((field) => {
+            methods.setError(field as keyof SignupFormValues, {
+              type: "server",
+              message: fieldErrors[field][0],
+            });
+          });
+        }
+      } else {
+        console.error("Unexpected error:", error);
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -66,7 +99,7 @@ const SignUp = () => {
             type="submit"
             className="w-full mt-6 bg-primary text-primary-foreground"
           >
-            Sign Up
+            {isSubmitting ? "Signing Up..." : "Sign Up"}
           </Button>
         </Form>
       </FormCard>
