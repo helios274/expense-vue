@@ -135,7 +135,12 @@ class VerifyEmailSerializer(serializers.Serializer):
 
 
 class ResendVerificationSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(
+        error_messages={
+            'required': 'Email is required.',
+            'blank': 'Email cannot be blank.',
+        }
+    )
 
     def validate_email(self, value):
         try:
@@ -163,20 +168,53 @@ class ResendVerificationSerializer(serializers.Serializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(
+        error_messages={
+            'required': 'Email is required.',
+            'blank': 'Email cannot be blank.',
+        }
+    )
+    password = serializers.CharField(
+        write_only=True,
+        error_messages={
+            'required': 'Password is required.',
+            'blank': 'Password cannot be blank.',
+        }
+    )
 
-    def validate(self, data):
-        email = data.get('email')
-        password = data.get('password')
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        # Authenticate the user
         user = authenticate(request=self.context.get(
-            'request'), username=email, password=password)
+            'request'), email=email, password=password)
 
-        if not user:
-            raise serializers.ValidationError(_('Invalid credentials'))
+        if user is None:
+            raise serializers.ValidationError(
+                detail=_("Invalid email or password."),
+                code='authentication_failed'
+            )
 
-        data['user'] = user
-        return data
+        if not user.is_active:
+            # Generate and hash verification code
+            plain_code = generate_verification_code()
+            user.verification_code = hash_verification_code(plain_code)
+            user.verification_code_expiry = get_verification_code_expiry(15)
+            user.save()
+
+            # Send verification email
+            send_verification_email(user, plain_code)
+
+            raise serializers.ValidationError(
+                detail=_(
+                    "Your account is not activated. Please verify your email."),
+                code='account_inactive'
+            )
+
+        # Authentication successful
+        attrs['user'] = user
+        return attrs
 
     def create(self, validated_data):
         user = validated_data.get('user')
