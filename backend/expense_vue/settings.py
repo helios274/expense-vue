@@ -172,9 +172,10 @@ DRF_STANDARDIZED_ERRORS = {
     "EXCEPTION_FORMATTER_CLASS": "utils.exceptions.CustomExceptionFormatter"
 }
 
+
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=4),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=env.int('ACCESS_TOKEN_LIFETIME_DAYS', 1)),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=env.int('REFRESH_TOKEN_LIFETIME_DAYS', 7)),
     "SIGNING_KEY": SECRET_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }

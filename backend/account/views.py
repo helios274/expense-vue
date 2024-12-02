@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import generics, status, mixins
@@ -63,8 +64,26 @@ class UserLoginView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            data = serializer.save()
-            return Response(data, status=status.HTTP_200_OK)
+            tokens = serializer.save()
+            access_token = tokens['access']
+            refresh_token = tokens['refresh']
+
+            response = Response({
+                "access": access_token,
+            }, status=status.HTTP_200_OK)
+
+            # Set the refresh token in a secure HTTP-only cookie
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh_token,
+                httponly=True,
+                secure=not settings.DEBUG,  # Set to True in production
+                # Adjust as needed ('Strict', 'Lax', or 'None')
+                samesite='Lax',
+                max_age=3600 * 24 * 10,  # Example: 1 week
+            )
+
+            return response
 
 
 class UserProfileView(

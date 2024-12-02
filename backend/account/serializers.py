@@ -219,16 +219,7 @@ class UserLoginSerializer(serializers.Serializer):
     def create(self, validated_data):
         user = validated_data.get('user')
         tokens = create_jwt_pair(user)
-        return {
-            'tokens': tokens,
-            'user': {
-                'email': user.email,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'last_login': user.last_login,
-                'date_joined': user.date_joined
-            }
-        }
+        return tokens
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
