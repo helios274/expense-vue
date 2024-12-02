@@ -34,9 +34,9 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -110,27 +110,26 @@ if DEBUG:
     STATIC_ROOT = BASE_DIR / 'static'
     STATIC_URL = '/static/'
 
-    CORS_ALLOW_ALL_ORIGINS = True
-
 else:
-    CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', str)
-
     CSRF_COOKIE_SECURE = True
 
-    # STATICFILES_DIRS = [
-    #     BASE_DIR / 'static'
-    # ]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', str)
 
-    # Google cloud storage settings
-    # GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    #     os.path.join(BASE_DIR, 'sto-admin-sa.json')
-    # )
-    # GS_PROJECT_ID = env('GS_PROJECT_ID')
-    # GS_BUCKET_NAME = env('GS_BUCKET_NAME')
-    # STATICFILES_STORAGE = 'custom_storages.StaticStorage'
-    # DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
-    # STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    # MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static'
+# ]
+
+# Google cloud storage settings
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+#     os.path.join(BASE_DIR, 'sto-admin-sa.json')
+# )
+# GS_PROJECT_ID = env('GS_PROJECT_ID')
+# GS_BUCKET_NAME = env('GS_BUCKET_NAME')
+# STATICFILES_STORAGE = 'custom_storages.StaticStorage'
+# DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+# STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+# MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
