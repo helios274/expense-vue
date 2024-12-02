@@ -4,6 +4,9 @@ from rest_framework.request import Request
 from rest_framework import generics, status, mixins
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import NotFound
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .models import User
 from .serializers import (
     CreateUserSerializer,
@@ -84,6 +87,28 @@ class UserLoginView(generics.GenericAPIView):
             )
 
             return response
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    """
+    A custom TokenRefreshView that reads the refresh token from cookies.
+    """
+
+    def post(self, request, *args, **kwargs):
+        # Get the refresh token from the cookies
+        refresh_token = request.COOKIES.get('refresh_token')
+
+        if not refresh_token:
+            raise NotFound('Refresh token not found')
+
+        # Add the refresh token to the request data
+        request.data['refresh'] = refresh_token
+
+        # Call the original TokenRefreshView logic
+        try:
+            return super().post(request, *args, **kwargs)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
 
 
 class UserProfileView(
