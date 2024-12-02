@@ -130,7 +130,7 @@ const VerifyEmail: React.FC = () => {
                   type="text"
                   inputMode="numeric"
                   maxLength={1}
-                  className="w-12 h-12 text-center text-xl border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-12 h-12 text-center text-xl text-black border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, index)}

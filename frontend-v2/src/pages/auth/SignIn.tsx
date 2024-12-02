@@ -6,17 +6,43 @@ import Input from "@/components/form/Input";
 import { Button } from "@/components/ui/button";
 import FormCard from "@/components/form/FormCard";
 import { signinSchema } from "@/lib/validation/authSchemas";
+import axios from "@/utils/axios/config";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 type SigninFormValues = z.infer<typeof signinSchema>;
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const methods = useForm<SigninFormValues>({
     resolver: zodResolver(signinSchema),
     mode: "onChange",
   });
 
-  const onSubmit = (data: SigninFormValues) => {
-    console.log("Form Data:", data);
+  const onSubmit = async (data: SigninFormValues) => {
+    setIsSubmitting(true);
+    try {
+      await axios.post("auth/login/", data);
+      toast.success("Sign-in successful!");
+      navigate("/dashboard");
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorResponse = error.response.data;
+        const errorMessage =
+          errorResponse.message || "An error occurred during sign-in.";
+        toast.error(errorMessage);
+        if (errorResponse?.code === "account_inactive") {
+          navigate("/verify-email", { state: { email: data.email } });
+        }
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -41,7 +67,7 @@ const SignIn = () => {
             type="submit"
             className="w-full mt-6 bg-primary text-primary-foreground"
           >
-            Sign In
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
         </Form>
       </FormCard>
