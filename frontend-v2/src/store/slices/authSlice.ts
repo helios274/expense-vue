@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axiosInstance from "@/utils/axios/config";
+import axiosInstance, { setAccessToken } from "@/utils/axios/config";
 import axios from "axios";
 
 interface AuthState {
@@ -28,6 +28,7 @@ export const loginUser = createAsyncThunk(
         withCredentials: true,
       });
       const { access } = response.data;
+      setAccessToken(access);
       return access;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
@@ -47,6 +48,25 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+// export const refreshAccessToken = createAsyncThunk(
+//   "auth/refreshAccessToken",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.post(
+//         "/auth/token/refresh",
+//         {},
+//         { withCredentials: true }
+//       );
+//       const { access } = response.data;
+//       setAccessToken(access);
+//       return access;
+//     } catch (error: any) {
+//       console.log(error);
+//       return rejectWithValue("Unable to refresh access token.");
+//     }
+//   }
+// );
 
 const authSlice = createSlice({
   name: "auth",
@@ -86,9 +106,22 @@ const authSlice = createSlice({
         state.error = payload.message;
         state.emailForVerification = payload.email || null;
       });
+    // Handle refreshAccessToken
+    // .addCase(
+    //   refreshAccessToken.fulfilled,
+    //   (state, action: PayloadAction<string>) => {
+    //     state.accessToken = action.payload;
+    //     state.status = "succeeded";
+    //   }
+    // )
+    // .addCase(refreshAccessToken.rejected, (state, action) => {
+    //   state.accessToken = null;
+    //   state.status = "failed";
+    //   state.error = action.payload as string;
+    // });
   },
 });
 
-export const { logout, setAccessToken } = authSlice.actions;
+export const { logout } = authSlice.actions;
 
 export default authSlice.reducer;

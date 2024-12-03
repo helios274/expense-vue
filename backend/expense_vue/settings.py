@@ -113,6 +113,16 @@ if DEBUG:
 else:
     CSRF_COOKIE_SECURE = True
 
+# Session Cookie Settings
+SESSION_COOKIE_SECURE = False  # Do not set Secure in development
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # Use 'Lax' during development
+
+# CSRF Cookie Settings
+CSRF_COOKIE_SECURE = False  # Do not set Secure in development
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'  # Use 'Lax' during development
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', str)
 

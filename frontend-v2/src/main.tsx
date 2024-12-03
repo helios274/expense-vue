@@ -17,6 +17,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import Profile from "./pages/auth/user/Profile";
 import PrivateRoute from "./components/routes/Private";
 import Dashboard from "./components/Dashboard";
+// import axiosInstance from "@/utils/axios/interceptors";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
