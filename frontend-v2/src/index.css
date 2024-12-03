@@ -42,6 +42,15 @@
     /* Ring and Focus */
     --ring: 220 90% 55%; /* Bright focus ring color */
 
+    --sidebar-background: 210 16% 97%; /* Very light cool gray */
+    --sidebar-foreground: 215 15% 20%; /* Muted dark gray for text */
+    --sidebar-primary: 222 75% 53%; /* Soft vibrant blue for highlights */
+    --sidebar-primary-foreground: 0 0% 100%; /* Pure white for text on primary */
+    --sidebar-accent: 35 10% 57%; /* Bright amber accent */
+    --sidebar-accent-foreground: 0 0% 10%; /* Almost black for contrast on accent */
+    --sidebar-border: 220 8% 85%; /* Light neutral gray for borders */
+    --sidebar-ring: 198 85% 62%; /* Lively turquoise for focus rings */
+
     /* Chart Colors */
     --chart-1: 220 70% 50%; /* Blue */
     --chart-2: 160 65% 40%; /* Teal */
@@ -91,15 +100,36 @@
     /* Ring and Focus */
     --ring: 220 90% 65%; /* Bright focus ring color */
 
+    --sidebar-background: 220 10% 13%; /* Deep blue-gray */
+    --sidebar-foreground: 220 7% 80%; /* Soft light gray for text */
+    --sidebar-primary: 221 85% 65%; /* Bright sapphire blue for highlights */
+    --sidebar-primary-foreground: 0 0% 100%; /* White for contrast */
+    --sidebar-accent: 50 95% 58%; /* Lime green accent */
+    --sidebar-accent-foreground: 0 0% 90%; /* Off-white for accent text */
+    --sidebar-border: 220 6% 25%; /* Darker neutral gray for borders */
+    --sidebar-ring: 220 95% 72%; /* Electric blue for focus rings */
+
     /* Chart Colors */
     --chart-1: 220 70% 60%; /* Blue */
     --chart-2: 160 65% 50%; /* Teal */
     --chart-3: 45 85% 65%; /* Yellow-green */
     --chart-4: 310 75% 65%; /* Purple-pink */
     --chart-5: 0 85% 60%; /* Red */
+
+    /* Radius for rounded corners */
+    --radius: 0.5rem; /* Modern, slightly rounded corners */
   }
 
   body {
     @apply bg-background text-foreground font-poppins;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

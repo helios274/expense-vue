@@ -3,7 +3,8 @@ import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import FormCard from "@/components/form/FormCard";
 import toast from "react-hot-toast";
-import axios from "@/utils/axios/config";
+import axiosInstance from "@/utils/axios/config";
+import axios from "axios";
 
 const VerifyEmail: React.FC = () => {
   const location = useLocation();
@@ -66,7 +67,7 @@ const VerifyEmail: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post("/auth/verify-email/", {
+      await axiosInstance.post("/auth/verify-email/", {
         email,
         verification_code: verificationCode,
       });
@@ -90,7 +91,7 @@ const VerifyEmail: React.FC = () => {
   const handleResendCode = async () => {
     setIsResending(true);
     try {
-      await axios.post("/auth/resend-verification-code/", { email });
+      await axiosInstance.post("/auth/resend-verification-code/", { email });
       toast.success("Verification code resent successfully!");
       setTimer(300); // Reset timer to 5 minutes
       setCode(["", "", "", "", "", ""]); // Clear input fields

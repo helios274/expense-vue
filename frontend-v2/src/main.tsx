@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import "@/styles/index.css";
+import "@/index.css";
 import {
   createBrowserRouter,
   createRoutesFromElements,

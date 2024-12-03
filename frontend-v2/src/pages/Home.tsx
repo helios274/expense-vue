@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { useAppSelector } from "@/store/hooks";
+import { Navigate } from "react-router-dom";
 
 const Home = () => {
+  const { accessToken } = useAppSelector((state) => state.auth);
+
+  if (accessToken) {
+    return <Navigate to="/dashboard" replace />;
+  }
   return (
     <>
       {/* Hero Section */}

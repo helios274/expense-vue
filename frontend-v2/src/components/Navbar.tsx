@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"; // shadcn components
 import { AlignJustify } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
 
 interface MenuItem {
   title: string;
@@ -22,6 +23,11 @@ const menuItems: MenuItem[] = [
   { title: "Sign In", to: "/sign-in" },
 ];
 
+const privateMenuItems: MenuItem[] = [
+  { title: "Expense", to: "/expense" },
+  { title: "Income", to: "/income" },
+];
+
 const getActiveClass = ({ isActive }: { isActive: boolean }) =>
   isActive
     ? "text-primary font-bold" // Active styles
@@ -29,6 +35,7 @@ const getActiveClass = ({ isActive }: { isActive: boolean }) =>
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const { accessToken } = useAppSelector((state) => state.auth);
 
   // Function to check if the current path matches the menu item's path
   const isActiveLink = (path: string) => {
@@ -43,30 +50,41 @@ const Navbar: React.FC = () => {
         </Link>
       </div>
 
-      {/* Desktop Links */}
-      <div className="hidden md:flex items-center space-x-6">
-        {menuItems.slice(0, 2).map((menuItem) => (
-          <NavLink
-            key={menuItem.title}
-            to={menuItem.to}
-            className={getActiveClass}
-          >
-            {menuItem.title}
-          </NavLink>
-        ))}
-      </div>
+      {!accessToken ? (
+        <>
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center space-x-6">
+            {menuItems.slice(0, 2).map((menuItem) => (
+              <NavLink
+                key={menuItem.title}
+                to={menuItem.to}
+                className={getActiveClass}
+              >
+                {menuItem.title}
+              </NavLink>
+            ))}
+          </div>
 
-      {/* Actions */}
-      <div className="hidden md:flex items-center space-x-4">
-        <Button variant="outline" asChild>
-          <Link to="/sign-in">Sign In</Link>
-        </Button>
-        <Button variant="default" asChild>
-          <Link to="/sign-up">Sign Up</Link>
-        </Button>
-        <ModeToggle />
-      </div>
-
+          {/* Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button variant="outline" asChild>
+              <Link to="/sign-in">Sign In</Link>
+            </Button>
+            <Button variant="default" asChild>
+              <Link to="/sign-up">Sign Up</Link>
+            </Button>
+          </div>
+        </>
+      ) : (
+        <div className="hidden md:flex items-center space-x-4">
+          {privateMenuItems.map((items) => (
+            <NavLink key={items.title} to={items.to} className={getActiveClass}>
+              {items.title}
+            </NavLink>
+          ))}
+        </div>
+      )}
+      <ModeToggle />
       {/* Mobile Menu */}
       <div className="md:hidden flex items-center space-x-2">
         <ModeToggle />
