@@ -9,5 +9,4 @@ class CustomExceptionFormatter(ExceptionFormatter):
             "type": error_response.type,
             "code": error.code,
             "message": error.detail,
-            "field_name": error.attr
         }
