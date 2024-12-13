@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Category, Expense
+from .models import Category, Transaction
 
 
-class ExpenseAdmin(admin.ModelAdmin):
+class TransactionAdmin(admin.ModelAdmin):
     pass
 
 
@@ -11,4 +11,4 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Expense)
+admin.site.register(Transaction)

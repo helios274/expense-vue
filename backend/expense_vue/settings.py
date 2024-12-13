@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     "drf_standardized_errors",
     'storages',
     'account',
-    'expense',
+    'transactions',
 ]
 
 
