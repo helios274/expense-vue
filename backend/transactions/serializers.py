@@ -19,7 +19,10 @@ class CategorySerializer(serializers.ModelSerializer):
     type = serializers.ChoiceField(
         choices=[('expense', 'Expense'), ('income', 'Income')],
         required=True,  # The type field is now mandatory
-        help_text=_("Defines whether the category is for expenses or income.")
+        error_messages={
+            'required': "Category type (either 'expense' or 'income') is required.",
+            'blank': 'Category type cannot be blank.',
+        }
     )
 
     class Meta:

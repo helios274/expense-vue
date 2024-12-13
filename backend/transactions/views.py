@@ -80,6 +80,17 @@ class CategoryViewSet(viewsets.ModelViewSet):
         }
         return response
 
+    def list(self, request, *args, **kwargs):
+        """
+        Retrieve a list of all categories accessible to the authenticated user.
+        Returns a success message upon successful retrieval.
+        """
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(
+            queryset, many=True, context={'request': request}
+        )
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
     def update(self, request, *args, **kwargs):
         """
         Update an existing category.
