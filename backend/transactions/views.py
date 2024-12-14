@@ -5,8 +5,70 @@ from rest_framework.exceptions import ValidationError, PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from .serializers import CategorySerializer
-from .models import Category, Transaction
+from .serializers import AccountSerializer, CategorySerializer
+from .models import Account, Category, Transaction
+
+
+class AccountViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing financial accounts. Users can create, read, update, and delete their accounts.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = AccountSerializer
+
+    def get_queryset(self):
+        """
+        Returns a queryset of accounts accessible to the authenticated user.
+        """
+        user = self.request.user
+        return Account.objects.filter(user=user)
+
+    def get_object(self):
+        """
+        Retrieve the account object by its primary key, ensuring it belongs to the user's accessible accounts.
+        Raises a 404 if not found.
+        """
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(self.get_queryset(), pk=pk)
+
+    def perform_create(self, serializer):
+        """
+        Automatically associate the created account with the authenticated user.
+        """
+        serializer.save(user=self.request.user)
+
+    def perform_destroy(self, instance):
+        """
+        Prevent deletion of accounts that have associated transactions.
+        """
+        if Transaction.objects.filter(account=instance).exists():
+            raise ValidationError(
+                _("Account cannot be deleted because it has associated transactions."))
+        instance.delete()
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new account and return a success message upon creation.
+        """
+        response = super().create(request, *args, **kwargs)
+        response.data = {
+            "message": _("Account created successfully."),
+            "data": {
+                "account": response.data
+            }
+        }
+        return response
+
+    def list(self, request, *args, **kwargs):
+        """
+        Retrieve a list of all accounts accessible to the authenticated user.
+        Returns a success message upon successful retrieval.
+        """
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(
+            queryset, many=True
+        )
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -87,7 +149,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
         """
         queryset = self.get_queryset()
         serializer = self.serializer_class(
-            queryset, many=True, context={'request': request}
+            queryset, many=True
         )
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 

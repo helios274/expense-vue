@@ -3,7 +3,58 @@ from rest_framework.validators import ValidationError
 from rest_framework.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from .models import Category
+from .models import Account, Category
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Account model, which represents a user's financial account.
+    This serializer:
+    - Requires the 'account_type' field, ensuring accounts are explicitly defined as 'cash', 'upi', 'bank', 'credit', or 'debit'.
+    - Requires the 'balance' field, ensuring the balance is non-negative.
+    - Requires the 'user' field, ensuring the account belongs to the authenticated user.
+    """
+    account_type = serializers.ChoiceField(
+        choices=[('cash', 'Cash'),
+                 ('upi', 'UPI'),
+                 ('bank', 'Bank Account'),
+                 ('credit', 'Credit Card'),
+                 ('debit', 'Debit Card'),],
+        error_messages={
+            'required': "Account type (either 'cash', 'upi', 'bank', 'credit', or 'debit') is required.",
+            'blank': 'Account type cannot be blank.',
+        }
+    )
+
+    class Meta:
+        model = Account
+        fields = ['id', 'name', 'account_type', 'balance']
+        read_only_fields = ['id']
+
+    def validate(self, data):
+        user = self.context['request'].user
+        name = data.get('name', getattr(self.instance, 'name', None))
+        balance = data.get('balance', getattr(self.instance, 'balance', None))
+        account_id = self.instance.id if self.instance else None
+
+        # Query for existing accounts with the same name and parent
+        accounts = Account.objects.filter(
+            name__iexact=name,
+        ).filter(Q(user=user))
+
+        # Exclude the current account if we are updating
+        if account_id:
+            accounts = accounts.exclude(id=account_id)
+
+        if accounts.exists():
+            raise ValidationError(
+                _("A account with this name already exists.")
+            )
+
+        if balance < 0:
+            raise ValidationError(_('Balance cannot be negative.'))
+
+        return data
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -70,18 +121,6 @@ class CategorySerializer(serializers.ModelSerializer):
             )
 
         return data
-
-    def create(self, validated_data):
-        """
-        Create a new user-specific category.
-
-        - Set `user` to the current user.
-        - Ensure `is_default` is False since this is a user-created category.
-        """
-        user = self.context['request'].user
-        validated_data['user'] = user
-        validated_data['is_default'] = False
-        return super().create(validated_data)
 
     def update(self, instance, validated_data):
         """
