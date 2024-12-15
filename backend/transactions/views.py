@@ -5,8 +5,8 @@ from rest_framework.exceptions import ValidationError, PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from .serializers import AccountSerializer, CategorySerializer
-from .models import Account, Category, Transaction
+from .serializers import AccountSerializer, CategorySerializer, TagSerializer
+from .models import Account, Category, Tag, Transaction
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -69,6 +69,31 @@ class AccountViewSet(viewsets.ModelViewSet):
             queryset, many=True
         )
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update an account and return a success message upon successful update.
+        """
+        response = super().update(request, *args, **kwargs)
+        response.data = {
+            "message": _("Account updated successfully."),
+            "data": {
+                "account": response.data
+            }
+        }
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Delete an account and return a success message upon successful deletion.
+        """
+        super().destroy(request, *args, **kwargs)
+        return Response(
+            data={
+                "message": _("Account deleted successfully.")
+            },
+            status=status.HTTP_200_OK
+        )
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -178,6 +203,86 @@ class CategoryViewSet(viewsets.ModelViewSet):
             data={
                 "success": True,
                 "message": _("Category deleted successfully.")
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing tags. Tags can be used to categorize transactions.
+    - Users can create their own tags.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = TagSerializer
+
+    def get_queryset(self):
+        """
+        Returns a queryset of tags accessible to the authenticated user.
+        """
+        user = self.request.user
+        return Tag.objects.filter(user=user)
+
+    def get_object(self):
+        """
+        Retrieve the tag object by its primary key, ensuring it belongs to the user's accessible tags.
+        Raises a 404 if not found.
+        """
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(self.get_queryset(), pk=pk)
+
+    def perform_create(self, serializer):
+        """
+        Automatically associate the created tag with the authenticated user.
+        """
+        serializer.save(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new tag for the user.
+        Returns a success message upon creation.
+        """
+        response = super().create(request, *args, **kwargs)
+        response.data = {
+            "message": _("Tag added successfully."),
+            "data": {
+                "tag": response.data
+            }
+        }
+        return response
+
+    def list(self, request, *args, **kwargs):
+        """
+        Retrieve a list of all tags accessible to the authenticated user.
+        Returns a success message upon successful retrieval.
+        """
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update an existing tag.
+        Returns a success message upon successful update.
+        """
+        response = super().update(request, *args, **kwargs)
+        response.data = {
+            "message": _("Tag updated successfully."),
+            "data": {
+                "tag": response.data
+            }
+        }
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Delete a tag.
+        Returns a success message upon successful deletion.
+        """
+        super().destroy(request, *args, **kwargs)
+        return Response(
+            data={
+                "message": _("Tag deleted successfully.")
             },
             status=status.HTTP_200_OK
         )

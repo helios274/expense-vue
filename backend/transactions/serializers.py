@@ -3,7 +3,7 @@ from rest_framework.validators import ValidationError
 from rest_framework.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from .models import Account, Category
+from .models import Account, Category, Tag
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -37,18 +37,17 @@ class AccountSerializer(serializers.ModelSerializer):
         balance = data.get('balance', getattr(self.instance, 'balance', None))
         account_id = self.instance.id if self.instance else None
 
-        # Query for existing accounts with the same name and parent
-        accounts = Account.objects.filter(
-            name__iexact=name,
-        ).filter(Q(user=user))
+        # Query for existing accounts with the same name
+        existing_accounts = Account.objects.filter(
+            user=user, name__iexact=name)
 
         # Exclude the current account if we are updating
         if account_id:
-            accounts = accounts.exclude(id=account_id)
+            existing_accounts = existing_accounts.exclude(id=account_id)
 
-        if accounts.exists():
+        if existing_accounts.exists():
             raise ValidationError(
-                _("A account with this name already exists.")
+                _("An account with this name already exists.")
             )
 
         if balance < 0:
@@ -137,3 +136,37 @@ class CategorySerializer(serializers.ModelSerializer):
                 _("You cannot change the 'is_default' status of a category."))
 
         return super().update(instance, validated_data)
+
+
+class TagSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Tag model, which represents a user-defined label for transactions.
+    """
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']
+        read_only_fields = ['id']
+
+    def validate(self, data):
+        """
+        Validate that:
+        - The tag name is unique for each user.
+        """
+        user = self.context['request'].user
+        name = data.get('name', getattr(self.instance, 'name', None))
+        tag_id = self.instance.id if self.instance else None
+
+        # Query for existing tags with the same name
+        existing_tags = Tag.objects.filter(
+            user=user, name__iexact=name)
+
+        # Exclude the current tag if we are updating
+        if tag_id:
+            existing_tags = existing_tags.exclude(id=tag_id)
+
+        if existing_tags.exists():
+            raise ValidationError(
+                _("A tag with this name already exists.")
+            )
+
+        return data
