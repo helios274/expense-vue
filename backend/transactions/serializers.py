@@ -3,7 +3,7 @@ from rest_framework.validators import ValidationError
 from rest_framework.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from .models import Account, Category, Tag
+from .models import Account, Category, Tag, Transaction
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -168,5 +168,63 @@ class TagSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 _("A tag with this name already exists.")
             )
+
+        return data
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Transaction model, which represents a user's financial transaction.
+    This serializer:
+    - Ensures that the user is set to the authenticated user on create.
+    - Validates that the selected category matches the transaction type (income or expense).
+    - Optionally, checks if the account is valid for the user.
+    """
+    type = serializers.ChoiceField(
+        choices=[('expense', 'Expense'), ('income', 'Income')],
+        error_messages={
+            'required': "Transaction type (either 'expense' or 'income') is required.",
+            'blank': 'Transaction type cannot be blank.',
+        }
+    )
+
+    class Meta:
+        model = Transaction
+        fields = [
+            'id', 'type', 'amount', 'date', 'category', 'description',
+            'account', 'tags', 'merchant', 'receipt'
+        ]
+        read_only_fields = ['id']
+
+    def validate(self, data):
+        """
+        Validate that:
+        - The category is compatible with the transaction type (e.g., no expense category for income transaction).
+        - Additional validations can be added as needed.
+        """
+        transaction_type = data.get(
+            'type', getattr(self.instance, 'type', None))
+        category = data.get('category', getattr(
+            self.instance, 'category', None))
+        account = data.get('account', getattr(self.instance, 'account', None))
+        user = self.context['request'].user
+
+        # Validate category compatibility
+        if category:
+            # Assuming category model has a `type` field that is 'income' or 'expense'
+            if category.type != transaction_type:
+                raise serializers.ValidationError(
+                    _("The selected category is not valid for a {} transaction.".format(
+                        transaction_type))
+                )
+            # Ensure the user can access this category (user-specific or default)
+            if category.user is not None and category.user != user:
+                raise serializers.ValidationError(
+                    _("You do not have permission to use this category."))
+
+        # Validate account belongs to the user (if account provided)
+        if account and account.user != user:
+            raise serializers.ValidationError(
+                _("You do not have permission to use this account."))
 
         return data

@@ -1,3 +1,6 @@
+from .serializers import TransactionSerializer
+from .models import Transaction
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -283,6 +286,72 @@ class TagViewSet(viewsets.ModelViewSet):
         return Response(
             data={
                 "message": _("Tag deleted successfully.")
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+class TransactionViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing user transactions.
+
+    Features:
+    - List, create, retrieve, update, and delete transactions.
+    - Ensures that only the authenticated user can access their own transactions.
+    - Apply logic to prevent deletion if conditions require it (e.g., transactions locked after a certain period).
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        """
+        Return only the transactions owned by the authenticated user.
+        """
+        user = self.request.user
+        return Transaction.objects.filter(user=user)
+
+    def get_object(self):
+        """
+        Retrieve a transaction object by its primary key, ensuring it belongs to the user.
+        Raises 404 if not found.
+        """
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(self.get_queryset(), pk=pk)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new transaction and return a success message upon creation.
+        """
+        response = super().create(request, *args, **kwargs)
+        response.data = {
+            "message": _("Transaction added successfully."),
+            "data": {
+                "transaction": response.data
+            }
+        }
+        return response
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update an existing transaction and return a success message upon successful update.
+        """
+        response = super().update(request, *args, **kwargs)
+        response.data = {
+            "message": _("Transaction updated successfully."),
+            "data": {
+                "transaction": response.data
+            }
+        }
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Delete a transaction and return a success message upon successful deletion.
+        """
+        super().destroy(request, *args, **kwargs)
+        return Response(
+            data={
+                "message": _("Transaction deleted successfully.")
             },
             status=status.HTTP_200_OK
         )

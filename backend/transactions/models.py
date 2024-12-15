@@ -72,7 +72,7 @@ class Transaction(models.Model):
     )
     type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField(default=now)
+    date = models.DateField()
     category = models.ForeignKey(
         'Category', on_delete=models.SET_NULL, null=True, blank=True
     )
