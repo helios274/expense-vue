@@ -177,7 +177,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
         """
         queryset = self.get_queryset()
         serializer = self.serializer_class(
-            queryset, many=True
+            queryset, many=True, context={'request': request}
         )
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
@@ -317,6 +317,12 @@ class TransactionViewSet(viewsets.ModelViewSet):
         """
         pk = self.kwargs.get('pk')
         return get_object_or_404(self.get_queryset(), pk=pk)
+
+    def perform_create(self, serializer):
+        """
+        Automatically associate the created tag with the authenticated user.
+        """
+        serializer.save(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         """

@@ -81,7 +81,7 @@ class Transaction(models.Model):
         'Account', on_delete=models.SET_NULL, null=True, blank=True
     )
     tags = models.ManyToManyField('Tag', blank=True)
-    merchant = models.CharField(max_length=255, blank=True)
+    entity = models.CharField(max_length=100, blank=True)
     receipt = models.FileField(upload_to='receipts/', null=True, blank=True)
 
     class Meta:
