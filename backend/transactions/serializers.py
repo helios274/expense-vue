@@ -138,6 +138,12 @@ class CategorySerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class CategoryNestedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'parent_category']
+
+
 class TagSerializer(serializers.ModelSerializer):
     """
     Serializer for the Tag model, which represents a user-defined label for transactions.
@@ -187,29 +193,57 @@ class TransactionSerializer(serializers.ModelSerializer):
             'blank': 'Transaction type cannot be blank.',
         }
     )
-    category = serializers.PrimaryKeyRelatedField(
+
+    # category_id is used for write operations (POST/PUT/PATCH)
+    category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
+        source='category',  # This will assign the category object to the 'category' field
+        write_only=True,
+        required=False,
         error_messages={
             'does_not_exist': _("The specified category does not exist."),
             'invalid': _("Invalid category ID."),
         }
     )
-    account = serializers.PrimaryKeyRelatedField(
+    # category is used for read operations
+    category = CategoryNestedSerializer(read_only=True)
+
+    # account_id is used for write operations (POST/PUT/PATCH)
+    account_id = serializers.PrimaryKeyRelatedField(
         queryset=Account.objects.all(),
+        source='account',  # This will assign the account object to the 'account' field
+        write_only=True,
+        required=False,
         error_messages={
             'does_not_exist': _("The specified account does not exist."),
             'invalid': _("Invalid account ID."),
         }
     )
-    tags = TagSerializer(many=True)
+    # account is used for read operations
+    account = AccountSerializer(read_only=True)
+
+    # tags_id is used for write operations (POST/PUT/PATCH)
+    tags_id = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        source='tags',  # This will assign the account object to the 'tags' field
+        required=False,
+        many=True,
+        write_only=True,
+        error_messages={
+            'does_not_exist': _("The specified tag does not exist."),
+            'invalid': _("Invalid account ID."),
+        }
+    )
+    # tags is used for read operations
+    tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
         model = Transaction
         fields = [
-            'id', 'type', 'amount', 'date', 'category', 'description',
-            'account', 'tags', 'entity', 'receipt'
+            'id', 'type', 'amount', 'date', 'category_id', 'category', 'description',
+            'account_id', 'account', 'tags_id', 'tags', 'entity', 'receipt'
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'category', 'account', 'tags']
 
     def validate(self, data):
         user = self.context['request'].user
