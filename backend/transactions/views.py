@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from .serializers import AccountSerializer, CategorySerializer, TagSerializer
 from .models import Account, Category, Tag, Transaction
+from utils.pagination import CustomPagination
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -302,6 +303,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = TransactionSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         """
