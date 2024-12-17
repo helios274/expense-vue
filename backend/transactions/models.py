@@ -1,23 +1,17 @@
 from django.db import models
-from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from account.models import User
+from utils import constants
 
 
 class Account(models.Model):
-    ACCOUNT_TYPES = (
-        ('cash', 'Cash'),
-        ('upi', 'UPI'),
-        ('bank', 'Bank Account'),
-        ('credit', 'Credit Card'),
-        ('debit', 'Debit Card'),
-    )
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='accounts'
     )
     name = models.CharField(max_length=100)
-    account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES)
+    account_type = models.CharField(
+        max_length=20, choices=constants.ACCOUNT_TYPES)
     balance = models.DecimalField(
         max_digits=15, decimal_places=2, default=0.00
     )
@@ -27,10 +21,6 @@ class Account(models.Model):
 
 
 class Category(models.Model):
-    CATEGORY_TYPES = (
-        ('expense', 'Expense'),
-        ('income', 'Income'),
-    )
 
     name = models.CharField(max_length=100)
     user = models.ForeignKey(
@@ -41,7 +31,7 @@ class Category(models.Model):
         'self', null=True, blank=True, on_delete=models.CASCADE, related_name='subcategories'
     )
     type = models.CharField(
-        max_length=10, choices=CATEGORY_TYPES, default='expense')
+        max_length=10, choices=constants.CATEGORY_TYPES, default='expense')
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -62,15 +52,11 @@ class Tag(models.Model):
 
 
 class Transaction(models.Model):
-    TRANSACTION_TYPES = (
-        ('income', 'Income'),
-        ('expense', 'Expense'),
-    )
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='transactions'
     )
-    type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+    type = models.CharField(max_length=10, choices=constants.TRANSACTION_TYPES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
     category = models.ForeignKey(

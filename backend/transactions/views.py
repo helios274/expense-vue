@@ -5,12 +5,15 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from .serializers import AccountSerializer, CategorySerializer, TagSerializer
 from .models import Account, Category, Tag, Transaction
 from utils.pagination import CustomPagination
+from utils.filters import TransactionFilterSet
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -304,6 +307,13 @@ class TransactionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = TransactionSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = TransactionFilterSet
+    search_fields = [
+        'type', 'category__name', 'description', 'account__name',
+        'account__account_type', 'tags__name', 'entity'
+    ]
+    ordering_fields = ['amount', 'date']
 
     def get_queryset(self):
         """

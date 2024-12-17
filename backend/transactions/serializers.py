@@ -4,6 +4,7 @@ from rest_framework.exceptions import PermissionDenied, NotFound
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from .models import Account, Category, Tag, Transaction
+from utils import constants
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -15,11 +16,7 @@ class AccountSerializer(serializers.ModelSerializer):
     - Requires the 'user' field, ensuring the account belongs to the authenticated user.
     """
     account_type = serializers.ChoiceField(
-        choices=[('cash', 'Cash'),
-                 ('upi', 'UPI'),
-                 ('bank', 'Bank Account'),
-                 ('credit', 'Credit Card'),
-                 ('debit', 'Debit Card'),],
+        choices=list(constants.ACCOUNT_TYPES),
         error_messages={
             'required': "Account type (either 'cash', 'upi', 'bank', 'credit', or 'debit') is required.",
             'blank': 'Account type cannot be blank.',
@@ -67,7 +64,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     subcategories = serializers.SerializerMethodField(read_only=True)
     type = serializers.ChoiceField(
-        choices=[('expense', 'Expense'), ('income', 'Income')],
+        choices=list(constants.CATEGORY_TYPES),
         required=True,  # The type field is now mandatory
         error_messages={
             'required': "Category type (either 'expense' or 'income') is required.",
@@ -187,7 +184,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     - Optionally, checks if the account is valid for the user.
     """
     type = serializers.ChoiceField(
-        choices=[('expense', 'Expense'), ('income', 'Income')],
+        choices=list(constants.TRANSACTION_TYPES),
         error_messages={
             'required': "Transaction type (either 'expense' or 'income') is required.",
             'blank': 'Transaction type cannot be blank.',
